@@ -2661,8 +2661,8 @@ a 64-bit system you will need a 32-bit cross compiler and libraries
 packages).
 
 This tree also contains the Tiny Code Generator (TCG) sources taken
-from QEMU 0.10 in the @file{tcg/} directory.  They are included for
-reference only and are not wired into the build system yet.
+from QEMU 0.10 in the @file{tcg/} directory.  They are now built and
+used by default, replacing the old dyngen backend.
 
 Then you configure QEMU and build it (usually no options are needed):
 @example

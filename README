@@ -10,7 +10,8 @@ The legacy build system requires 32-bit object files, so compiling on a
 
 A snapshot of the newer Tiny Code Generator (TCG) from QEMU 0.10 is
 provided in the @file{tcg/} directory as a starting point for moving
-away from the obsolete dyngen backend.  It is not integrated yet.
+away from the obsolete dyngen backend.  QEMU now uses TCG for
+translation and the old dyngen tool has been removed.
 
 Fabrice Bellard.
 
