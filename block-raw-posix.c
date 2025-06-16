@@ -29,6 +29,7 @@
 #include "block_int.h"
 #include <assert.h>
 #include <aio.h>
+#include <signal.h>
 
 #ifdef CONFIG_COCOA
 #include <paths.h>
