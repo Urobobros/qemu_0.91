@@ -2651,6 +2651,10 @@ tar zxvf qemu-x.y.z.tar.gz
 cd qemu-x.y.z
 @end example
 
+You need the development package of SDL 1.2 installed so the
+configure script can enable graphical output. On Debian-based systems
+this package is named @code{libsdl1.2-dev}.
+
 Then you configure QEMU and build it (usually no options are needed):
 @example
 ./configure
