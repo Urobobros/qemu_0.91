@@ -66,7 +66,7 @@
 #include <linux/cdrom.h>
 #include <linux/hdreg.h>
 #include <linux/soundcard.h>
-#include <linux/dirent.h>
+#include <dirent.h>
 #include <linux/kd.h>
 
 #include "qemu.h"
@@ -1975,7 +1975,7 @@ static abi_long do_ipc(unsigned int call, int first,
                       /* XXX: this code is not correct */
                       struct ipc_kludge
                       {
-                              void *__unbounded msgp;
+                              void *msgp;
                               long int msgtyp;
                       };
 
@@ -3035,6 +3035,7 @@ static inline abi_long target_to_host_timespec(struct timespec *host_ts,
     host_ts->tv_sec = tswapl(target_ts->tv_sec);
     host_ts->tv_nsec = tswapl(target_ts->tv_nsec);
     unlock_user_struct(target_ts, target_addr, 0);
+    return 0;
 }
 
 static inline abi_long host_to_target_timespec(abi_ulong target_addr,
@@ -3047,6 +3048,7 @@ static inline abi_long host_to_target_timespec(abi_ulong target_addr,
     target_ts->tv_sec = tswapl(host_ts->tv_sec);
     target_ts->tv_nsec = tswapl(host_ts->tv_nsec);
     unlock_user_struct(target_ts, target_addr, 1);
+    return 0;
 }
 
 /* do_syscall() should always have a single exit point at the end so
