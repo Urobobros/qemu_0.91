@@ -3351,9 +3351,14 @@ abi_long do_syscall(void *cpu_env, int num, abi_long arg1,
     case TARGET_NR_stime:
         {
             time_t host_time;
+            struct timeval tv;
+
             if (get_user_sal(host_time, arg1))
                 goto efault;
-            ret = get_errno(stime(&host_time));
+
+            tv.tv_sec = host_time;
+            tv.tv_usec = 0;
+            ret = get_errno(settimeofday(&tv, NULL));
         }
         break;
 #endif
