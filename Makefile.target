@@ -41,7 +41,6 @@ BASE_LDFLAGS=
 #CFLAGS+=-Werror
 LIBS=
 HELPER_CFLAGS=$(CFLAGS)
-DYNGEN=../dyngen$(EXESUF)
 # user emulator name
 ifndef TARGET_ARCH2
 TARGET_ARCH2=$(TARGET_ARCH)
@@ -288,8 +287,14 @@ SRCS:= $(OBJS:.o=.c)
 OBJS+= libqemu.a
 
 # cpu emulator library
-LIBOBJS=exec.o kqemu.o translate-op.o translate-all.o cpu-exec.o\
-        translate.o op.o host-utils.o
+LIBOBJS=exec.o kqemu.o translate-all.o cpu-exec.o \
+        translate.o host-utils.o
+# TCG code generator (imported from QEMU 0.10)
+LIBOBJS+= tcg/tcg.o tcg/tcg-runtime.o
+CPPFLAGS+=-I$(SRC_PATH)/tcg -I$(SRC_PATH)/tcg/$(ARCH)
+ifeq ($(ARCH),sparc64)
+CPPFLAGS+=-I$(SRC_PATH)/tcg/sparc
+endif
 ifdef CONFIG_SOFTFLOAT
 LIBOBJS+=fpu/softfloat.o
 else
@@ -298,11 +303,11 @@ endif
 CPPFLAGS+=-I$(SRC_PATH)/fpu
 
 ifeq ($(TARGET_ARCH), i386)
-LIBOBJS+=helper.o helper2.o
+LIBOBJS+=op_helper.o helper.o
 endif
 
 ifeq ($(TARGET_ARCH), x86_64)
-LIBOBJS+=helper.o helper2.o
+LIBOBJS+=op_helper.o helper.o
 endif
 
 ifeq ($(TARGET_BASE_ARCH), ppc)
@@ -583,34 +588,19 @@ libqemu.a: $(LIBOBJS)
 	rm -f $@
 	$(AR) rcs $@ $(LIBOBJS)
 
-translate.o: translate.c gen-op.h opc.h cpu.h
+translate.o: translate.c cpu.h
 
-translate-all.o: translate-all.c opc.h cpu.h
+translate-all.o: translate-all.c cpu.h
 
-translate-op.o: translate-all.c op.h opc.h cpu.h
-
-op.h: op.o $(DYNGEN)
-	$(DYNGEN) -o $@ $<
-
-opc.h: op.o $(DYNGEN)
-	$(DYNGEN) -c -o $@ $<
-
-gen-op.h: op.o $(DYNGEN)
-	$(DYNGEN) -g -o $@ $<
-
-op.o: op.c
-	$(CC) $(OP_CFLAGS) $(CPPFLAGS) -c -o $@ $<
+tcg/tcg.o: cpu.h
 
 # HELPER_CFLAGS is used for all the code compiled with static register
 # variables
-ifeq ($(TARGET_BASE_ARCH), i386)
-# XXX: rename helper.c to op_helper.c
 helper.o: helper.c
 	$(CC) $(HELPER_CFLAGS) $(CPPFLAGS) $(BASE_CFLAGS) -c -o $@ $<
-else
+
 op_helper.o: op_helper.c
 	$(CC) $(HELPER_CFLAGS) $(CPPFLAGS) $(BASE_CFLAGS) -c -o $@ $<
-endif
 
 cpu-exec.o: cpu-exec.c
 	$(CC) $(HELPER_CFLAGS) $(CPPFLAGS) $(BASE_CFLAGS) -c -o $@ $<
@@ -627,8 +617,8 @@ signal.o: signal.c
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o *.a *~ $(PROGS) gen-op.h opc.h op.h nwfpe/*.o fpu/*.o
-	rm -f *.d */*.d
+	       rm -f *.o *.a *~ $(PROGS) nwfpe/*.o fpu/*.o
+	       rm -f *.d */*.d tcg/*.o
 
 install: all
 ifneq ($(PROGS),)
