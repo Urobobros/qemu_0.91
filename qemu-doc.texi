@@ -2655,6 +2655,11 @@ You need the development package of SDL 1.2 installed so the
 configure script can enable graphical output. On Debian-based systems
 this package is named @code{libsdl1.2-dev}.
 
+This old QEMU release only supports 32-bit object files.  If you build on
+a 64-bit system you will need a 32-bit cross compiler and libraries
+(for example by passing @option{--cc='gcc -m32'} and installing multilib
+packages).
+
 Then you configure QEMU and build it (usually no options are needed):
 @example
 ./configure
