@@ -1,3 +1,12 @@
 Read the documentation in qemu-doc.html.
 
+This version needs the SDL 1.2 development package (for example
+@code{libsdl1.2-dev} on Debian-based systems) if you want to build
+with graphical output enabled.
+
+The legacy build system requires 32-bit object files, so compiling on a
+64-bit host will fail unless you use a 32-bit cross compiler (for example
+`gcc -m32` with the corresponding multilib packages).
+
 Fabrice Bellard.
+
